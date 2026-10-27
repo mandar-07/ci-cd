@@ -2,38 +2,30 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    tools {
+        nodejs 'NodeJS'
+    }
 
+    stages {
         stage('Install Dependencies') {
             steps {
                 sh 'npm ci'
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                sh 'npm test -- --runInBand'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Build stage completed'
+                sh 'npm test'
             }
         }
     }
 
     post {
         success {
-            echo 'CI Pipeline Successful!'
+            echo 'CI Pipeline completed successfully!'
         }
         failure {
-            echo 'CI Pipeline Failed!'
+            echo 'CI Pipeline failed. Check the console output.'
         }
     }
 }
