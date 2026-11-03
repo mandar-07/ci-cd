@@ -1,12 +1,20 @@
-
 pipeline {
-    agent any
+    agent {
+        label 'docker-agent'
+    }
 
     tools {
         nodejs 'NodeJS-22'
     }
 
     stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm ci'
@@ -18,14 +26,21 @@ pipeline {
                 sh 'npm test'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t nexaprime-ci-cd:1.0 .'
+            }
+        }
     }
 
     post {
         success {
-            echo 'CI Pipeline completed successfully!'
+            echo 'CI/CD Pipeline completed successfully!'
         }
+
         failure {
-            echo 'CI Pipeline failed. Check the console output.'
+            echo 'Pipeline failed. Check the console output.'
         }
     }
 }
