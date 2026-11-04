@@ -29,7 +29,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t nexaprime-ci-cd:1.0 .'
+                sh 'docker build -t nexaprime-ci-cd:1.${BUILD_NUMBER} .'
             }
         }
 
@@ -50,10 +50,12 @@ pipeline {
                             --username "$DOCKERHUB_USER" \
                             --password-stdin
 
-                        docker tag nexaprime-ci-cd:1.0 \
-                            "$DOCKERHUB_USER/nexaprime:1.0"
+                        IMAGE_TAG="1.${BUILD_NUMBER}"
 
-                        docker push "$DOCKERHUB_USER/nexaprime:1.0"
+                        docker tag "nexaprime-ci-cd:${IMAGE_TAG}" \
+                            "$DOCKERHUB_USER/nexaprime:${IMAGE_TAG}"
+
+                        docker push "$DOCKERHUB_USER/nexaprime:${IMAGE_TAG}"
                     '''
                 }
             }
